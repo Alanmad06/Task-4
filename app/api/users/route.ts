@@ -8,11 +8,15 @@ const db = await getConnection();
 export async function GET() {
   try {
     const query = "SELECT * FROM users";
-    const [rows] = await db.query(query);
+    const [rows] :  [OkPacket, FieldPacket[]] = await db.query(query);
     return NextResponse.json(rows);
-  } catch (e: any) {
+  } catch (e) {
     console.error(e);
-    return NextResponse.json({ error: e.message });
+    if (e instanceof Error) {
+      return NextResponse.json({ error: e.message }, { status: 500 });
+    } else {
+      return NextResponse.json({ error: "An unknown error occurred." }, { status: 500 });
+    }
   }
 }
 
@@ -36,8 +40,12 @@ export async function POST(request: Request) {
     const [result] : [OkPacket, FieldPacket[]] = await db.query(query, [first_name, email, hashedPassword]);
 
     return NextResponse.json({ id: result.affectedRows });
-  } catch (e: any) {
+  } catch (e) {
     console.error(e);
-    return NextResponse.json({ error: e.message }, { status: 500 });
+    if (e instanceof Error) {
+      return NextResponse.json({ error: e.message }, { status: 500 });
+    } else {
+      return NextResponse.json({ error: "An unknown error occurred." }, { status: 500 });
+    }
   }
 }

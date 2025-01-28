@@ -1,5 +1,5 @@
 import { getConnection } from "@/auth";
-import { FieldPacket, OkPacket, RowDataPacket } from "mysql2";
+import { FieldPacket, OkPacket } from "mysql2";
 import { NextResponse } from "next/server";
 
 const db = await getConnection();

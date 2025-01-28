@@ -1,4 +1,5 @@
 import { createConnection } from "@/lib/db";
+import { OkPacket, FieldPacket } from "mysql2";
 import { NextResponse } from "next/server";
 
 const db = await createConnection();
@@ -16,11 +17,15 @@ export async function POST(request: Request) {
       SET blocked = 0
       WHERE id IN (?)
     `;
-    const [result]: any = await db.query(query, [userIds]);
+    const [result]:  [OkPacket, FieldPacket[]] = await db.query(query, [userIds]);
 
     return NextResponse.json({ blockedCount: result.affectedRows });
-  } catch (e: any) {
+  } catch (e) {
     console.error(e);
-    return NextResponse.json({ error: e.message }, { status: 500 });
+    if (e instanceof Error) {
+      return NextResponse.json({ error: e.message }, { status: 500 });
+    } else {
+      return NextResponse.json({ error: "An unknown error occurred." }, { status: 500 });
+    }
   }
 }
