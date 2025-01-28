@@ -1,11 +1,17 @@
 import { getConnection } from "@/auth";
-import { FieldPacket, OkPacket } from "mysql2";
+import { Connection, FieldPacket, OkPacket } from "mysql2/promise";
 import { NextResponse } from "next/server";
 
-const db = await getConnection();
+let db : Connection | undefined;
+
 
 export async function POST(request: Request) {
+  
+   
+  
   try {
+    db = await getConnection();
+    
     const { userIds } = await request.json();
 
     if (!userIds || !Array.isArray(userIds) || userIds.length === 0) {
@@ -17,7 +23,7 @@ export async function POST(request: Request) {
       SET blocked = 1 
       WHERE id IN (?)
     `;
-    const [result]: [OkPacket, FieldPacket[]] = await db.query(query, [userIds]);
+    const [result]: [OkPacket, FieldPacket[]] = await db!.query(query, [userIds]);
 
     return NextResponse.json({ blockedCount: result.affectedRows });
   } catch (e) {

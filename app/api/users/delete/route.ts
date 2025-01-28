@@ -1,11 +1,13 @@
 import { getConnection } from "@/auth";
-import { OkPacket, FieldPacket } from "mysql2";
+import {Connection , OkPacket, FieldPacket } from "mysql2/promise";
+import { } from "mysql2/promise";
 import { NextResponse } from "next/server";
 
-const db = await getConnection();
+let db : Connection | undefined;
 
 export async function POST(request: Request) {
   try {
+    db = await getConnection()
     const { userIds } = await request.json();
 
     if (!userIds || !Array.isArray(userIds) || userIds.length === 0) {
@@ -16,7 +18,7 @@ export async function POST(request: Request) {
       DELETE FROM users
       WHERE id = (?)
     `;
-    const [result]: [OkPacket, FieldPacket[]] = await db.query(query, [userIds]);
+    const [result]: [OkPacket, FieldPacket[]] = await db!.query(query, [userIds]);
 
     return NextResponse.json({ blockedCount: result.affectedRows });
   } catch (e) {

@@ -1,14 +1,15 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { getConnection } from "@/auth";
-import { OkPacket, FieldPacket } from "mysql2";
+import { OkPacket, FieldPacket, Connection } from "mysql2/promise";
 
-const db = await getConnection();
+let db : Connection | undefined;
 
 export async function GET() {
   try {
+    db  = await getConnection()
     const query = "SELECT * FROM users";
-    const [rows] :  [OkPacket, FieldPacket[]] = await db.query(query);
+    const [rows] :  [OkPacket, FieldPacket[]] = await db!.query(query);
     return NextResponse.json(rows);
   } catch (e) {
     console.error(e);
@@ -22,6 +23,7 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
+    db  = await getConnection()
     const { first_name, email, password } = await request.json();
 
     if (!first_name || !email || !password) {
@@ -37,7 +39,7 @@ export async function POST(request: Request) {
       INSERT INTO users (first_name, email, password, last_login) 
       VALUES (?, ?, ?, NOW())
     `;
-    const [result] : [OkPacket, FieldPacket[]] = await db.query(query, [first_name, email, hashedPassword]);
+    const [result] : [OkPacket, FieldPacket[]] = await db!.query(query, [first_name, email, hashedPassword]);
 
     return NextResponse.json({ id: result.affectedRows });
   } catch (e) {
