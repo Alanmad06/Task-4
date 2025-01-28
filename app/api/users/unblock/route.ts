@@ -1,11 +1,13 @@
-import { createConnection } from "@/lib/db";
-import { OkPacket, FieldPacket } from "mysql2";
+import { getConnection } from "@/auth";
+
+import { OkPacket, FieldPacket, Connection } from "mysql2/promise";
 import { NextResponse } from "next/server";
 
-const db = await createConnection();
+let db : Connection | undefined;
 
 export async function POST(request: Request) {
   try {
+    db = await  getConnection()
     const { userIds } = await request.json();
 
     if (!userIds || !Array.isArray(userIds) || userIds.length === 0) {
