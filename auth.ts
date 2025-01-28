@@ -1,92 +1,117 @@
-import NextAuth from 'next-auth';
-import CredentialsProvider from 'next-auth/providers/credentials';
-import { authConfig } from '@/auth.config';
-import { z } from 'zod';
-import { createConnection } from '@/lib/db'; 
-import bcrypt from 'bcryptjs';
-import type { User } from '@/lib/definitions';
-import {Connection} from 'mysql2/promise';
+import NextAuth from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials";
+import { authConfig } from "@/auth.config";
+import { z } from "zod";
+import { createConnection } from "@/lib/db";
+import bcrypt from "bcryptjs";
+import type { User } from "@/lib/definitions";
+import { Connection } from "mysql2/promise";
 
-let db : Connection | undefined;
+let db: Connection | undefined;
 
-export async function getConnection(){
-
-    if(!db){
-        db = await createConnection();
+// Reutilizar la conexión a la base de datos
+export async function getConnection(): Promise<Connection> {
+  if (!db) {
+    try {
+      db = await createConnection();
+    } catch (error) {
+      console.error("Error al conectar con la base de datos:", error);
+      throw new Error("Error al conectar con la base de datos.");
     }
-    return db;
+  }
+  return db;
 }
 
+// Obtener un usuario por correo
 async function getUser(email: string): Promise<User | undefined> {
   try {
-    const [results] : any = await db!.query('SELECT * FROM users WHERE email = ?', [email]);
-    return results[0]; 
+    const db = await getConnection();
+    const [results]: any = await db.query("SELECT * FROM users WHERE email = ?", [email]);
+    return results[0];
   } catch (error) {
-    console.error('Error al obtener el usuario:', error);
-    throw new Error('Error al obtener el usuario.');
+    console.error("Error al obtener el usuario:", error);
+    throw new Error("Error al obtener el usuario.");
   }
 }
 
+// Actualizar el último inicio de sesión
 async function updateLastLogin(email: string): Promise<void> {
-    try {
-        const query = 'UPDATE users SET last_login = NOW() WHERE email = ?';
-        await db!.query(query, [email]);
-    } catch (error) {
-        console.error('Error al actualizar el último inicio de sesión:', error);
-        throw new Error('Error al actualizar el último inicio de sesión.');
-    }
+  try {
+    const db = await getConnection();
+    const query = "UPDATE users SET last_login = NOW() WHERE email = ?";
+    await db.query(query, [email]);
+  } catch (error) {
+    console.error("Error al actualizar el último inicio de sesión:", error);
+    throw new Error("Error al actualizar el último inicio de sesión.");
+  }
 }
 
+// Verificar si el usuario está bloqueado
 async function getBlockedState(email: string): Promise<boolean> {
-    try {
-        const query = 'SELECT blocked FROM users WHERE email = (?)';
-        const [result]:any = await db!.query(query,[email])
-        
-        return result[0].blocked
-    } catch (error) {
-        console.error('Error al actualizar el último inicio de sesión:', error);
-        throw new Error('Error al actualizar el último inicio de sesión.');
+  try {
+    const db = await getConnection();
+    const query = "SELECT blocked FROM users WHERE email = ?";
+    const [results]: any = await db.query(query, [email]);
+
+    if (results.length === 0) {
+      throw new Error("Usuario no encontrado.");
     }
+
+    return Boolean(results[0].blocked);
+  } catch (error) {
+    console.error("Error al verificar el estado de bloqueo:", error);
+    throw new Error("Error al verificar el estado de bloqueo.");
+  }
 }
-
-
 
 export const { auth, signIn, signOut } = NextAuth({
   ...authConfig,
   providers: [
     CredentialsProvider({
       async authorize(credentials) {
+        // Validar credenciales con Zod
         const parsedCredentials = z
           .object({ email: z.string().email(), password: z.string().min(1) })
           .safeParse(credentials);
 
-        if (parsedCredentials.success) {
-          const { email, password } = parsedCredentials.data;
-          const user : User | undefined = await getUser(email);
+        if (!parsedCredentials.success) {
+          console.error("Credenciales inválidas:", parsedCredentials.error);
+          return null;
+        }
 
+        const { email, password } = parsedCredentials.data;
+
+        try {
+          // Obtener usuario
+          const user = await getUser(email);
           if (!user) {
-            return null; 
-          }
-
-         
-          const isPasswordValid = await bcrypt.compare(password, user.password!);
-          if (!isPasswordValid) {
+            console.error("Usuario no encontrado.");
             return null;
           }
 
-          await updateLastLogin(email)
-         const isBlocked = await getBlockedState(email)
-         
-         if(isBlocked){
-            return null
-         }
-          return user; 
-        }
+          // Validar contraseña
+          const isPasswordValid = await bcrypt.compare(password, user.password!);
+          if (!isPasswordValid) {
+            console.error("Contraseña incorrecta.");
+            return null;
+          }
 
-        return null; 
+          // Actualizar el último inicio de sesión
+          await updateLastLogin(email);
+
+          // Verificar si el usuario está bloqueado
+          const isBlocked = await getBlockedState(email);
+          if (isBlocked) {
+            console.error("Usuario bloqueado.");
+            return null;
+          }
+
+          return user;
+        } catch (error) {
+          console.error("Error durante la autorización:", error);
+          return null;
+        }
       },
     }),
   ],
 });
-
-db = await getConnection()
