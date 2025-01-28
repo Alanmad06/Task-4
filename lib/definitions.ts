@@ -3,5 +3,6 @@ export type User = {
     first_name: string,
     email: string,
     last_login: Date,
-    blocked?:boolean
+    blocked?:boolean,
+    password?:string
 }

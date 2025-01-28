@@ -1,15 +1,22 @@
-import { createConnection } from "@/lib/db";
-import { NextResponse } from "next/server";
 
-const db = await createConnection();
+ 
+import { signIn } from '@/auth';
+import { AuthError } from 'next-auth';
 
-export async function GET() {
+
+export async function POST(request : Request) {
   try {
-    const query = 'SELECT email,password FROM users ';
-    const [rows] = await db.query(query);
-    return NextResponse.json(rows);
-  } catch (e: any) {
-    console.error(e);
-    return NextResponse.json({ error: e.message });
+    const body = await request.json();
+    await signIn('credentials', body);
+  } catch (error) {
+    if (error instanceof AuthError) {
+      switch (error.type) {
+        case 'CredentialsSignin':
+          return 'Invalid credentials.';
+        default:
+          return 'Something went wrong.';
+      }
+    }
+    throw error;
   }
 }

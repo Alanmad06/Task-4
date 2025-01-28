@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Trash } from "lucide-react";
-import { ToastContainer, toast } from "react-toastify";
+import {  toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { User } from "@/lib/definitions";
 
@@ -76,7 +76,7 @@ export default function DeleteButton({ selectedUsers, setUsers }: { selectedUser
                     </div>
                 )}
             </button>
-            <ToastContainer />
+          
         </div>
     );
 }

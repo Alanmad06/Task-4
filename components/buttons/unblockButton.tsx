@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Unlock } from "lucide-react";
-import { ToastContainer, toast } from "react-toastify";
+import {  toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { User } from "@/lib/definitions";
 
@@ -81,7 +81,7 @@ export default function BlockButton({ selectedUsers,setUsers }: { selectedUsers:
                     </div>
                 )}
             </button>
-            <ToastContainer />
+          
         </div>
     );
 }

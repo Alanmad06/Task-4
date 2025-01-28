@@ -1,13 +1,17 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
+import { useRouter } from "next/navigation";
 
-export default function RegisterForm() {
+export default function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [firstName, setFirstName] = useState("");
   const [message, setMessage] = useState("");
+
+  const router = useRouter()
+  
+  
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -15,21 +19,23 @@ export default function RegisterForm() {
 
     try {
     
-      const response = await fetch("/api/users", {
+      const response = await fetch("/api/users/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          first_name: firstName,
           email,
           password, 
         }),
       });
 
       if (!response.ok) {
-        throw new Error("Error: Something happend trying to Login ");
+        setMessage("Error: Something happend trying to Login ");
       }
+      
+      router.push("/users")
+      
 
     } catch (error: any) {
       setMessage(`Error: ${error.message}`);
@@ -49,16 +55,7 @@ export default function RegisterForm() {
         onSubmit={handleSubmit}
         className="bg-white p-6 rounded shadow-md w-full max-w-md"
       >
-        <label className="block mb-4 text-black">
-          Nombre:
-          <input
-            type="text"
-            className="mt-1 p-2 w-full border rounded"
-            value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
-            required
-          />
-        </label>
+        
         <label className="block mb-4 text-black">
           Email:
           <input
@@ -84,7 +81,7 @@ export default function RegisterForm() {
           type="submit"
           className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
         >
-          Crear Usuario
+          Login
         </button>
         {message && (
           <p className={`mt-4 ${message.startsWith("Error") ? "text-red-500" : "text-green-500"}`}>
@@ -92,7 +89,7 @@ export default function RegisterForm() {
           </p>
         )}
       </form>
-      <ToastContainer/>
+    
     </div>
   );
 }

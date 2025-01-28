@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 
 export default function RegisterForm() {
   const [email, setEmail] = useState("");
@@ -28,7 +28,7 @@ export default function RegisterForm() {
       });
 
       if (!response.ok) {
-        throw new Error("Error: something happend while Register");
+        setMessage("Error: something happend while Register");
       }
 
 
@@ -94,7 +94,7 @@ export default function RegisterForm() {
           </p>
         )}
       </form>
-      <ToastContainer />
+      
     </div>
   );
 }
