@@ -1,6 +1,6 @@
 
  
-import { getConnection, signIn } from '@/auth';
+import {signIn } from '@/auth';
 import { AuthError } from 'next-auth';
 
 

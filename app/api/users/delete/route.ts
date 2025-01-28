@@ -1,4 +1,5 @@
 import { getConnection } from "@/auth";
+import { OkPacket, FieldPacket } from "mysql2";
 import { NextResponse } from "next/server";
 
 const db = await getConnection();
@@ -15,11 +16,15 @@ export async function POST(request: Request) {
       DELETE FROM users
       WHERE id = (?)
     `;
-    const [result]: any = await db.query(query, [userIds]);
+    const [result]: [OkPacket, FieldPacket[]] = await db.query(query, [userIds]);
 
     return NextResponse.json({ blockedCount: result.affectedRows });
-  } catch (e: any) {
+  } catch (e) {
     console.error(e);
-    return NextResponse.json({ error: e.message }, { status: 500 });
+    if (e instanceof Error) {
+      return NextResponse.json({ error: e.message }, { status: 500 });
+    } else {
+      return NextResponse.json({ error: "An unknown error occurred." }, { status: 500 });
+    }
   }
 }

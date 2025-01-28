@@ -38,8 +38,12 @@ export default function DeleteButton({ selectedUsers, setUsers }: { selectedUser
             // Actualiza el estado de los usuarios eliminando los seleccionados
             setUsers((prevUsers) => prevUsers.filter((user) => !selectedUsers.includes(user.id)));
 
-        } catch (error: any) {
-            setMessage(`Error: ${error.message}`);
+        } catch (error) {
+            if (error instanceof Error) {
+                setMessage(`Error: ${error.message}`);
+            } else {
+                setMessage("An unknown error occurred.");
+            }
         } finally {
             setLoading(false);
         }

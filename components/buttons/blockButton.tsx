@@ -43,8 +43,12 @@ export default function BlockButton({ selectedUsers,setUsers }: { selectedUsers:
             );
             
             
-        } catch (error: any) {
-            setMessage(`Error: ${error.message}`);
+        } catch (error) {
+            if (error instanceof Error) {
+                setMessage(`Error: ${error.message}`);
+            } else {
+                setMessage("An unknown error occurred.");
+            }
         } finally {
             setLoading(false);
         }

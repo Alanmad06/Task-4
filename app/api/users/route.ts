@@ -1,13 +1,13 @@
-
-import { NextResponse } from 'next/server';
+import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
-import { getConnection } from '@/auth';
+import { getConnection } from "@/auth";
+import { OkPacket, FieldPacket } from "mysql2";
 
 const db = await getConnection();
 
 export async function GET() {
   try {
-    const query = 'SELECT * FROM users';
+    const query = "SELECT * FROM users";
     const [rows] = await db.query(query);
     return NextResponse.json(rows);
   } catch (e: any) {
@@ -20,9 +20,11 @@ export async function POST(request: Request) {
   try {
     const { first_name, email, password } = await request.json();
 
-    
     if (!first_name || !email || !password) {
-      return NextResponse.json({ error: "Faltan campos requeridos" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Faltan campos requeridos" },
+        { status: 400 }
+      );
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -31,9 +33,9 @@ export async function POST(request: Request) {
       INSERT INTO users (first_name, email, password, last_login) 
       VALUES (?, ?, ?, NOW())
     `;
-    const [result] = await db.query(query, [first_name, email, hashedPassword]);
+    const [result] : [OkPacket, FieldPacket[]] = await db.query(query, [first_name, email, hashedPassword]);
 
-    return NextResponse.json({ id: result }); 
+    return NextResponse.json({ id: result.affectedRows });
   } catch (e: any) {
     console.error(e);
     return NextResponse.json({ error: e.message }, { status: 500 });

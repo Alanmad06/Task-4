@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function RegisterForm() {
   const [email, setEmail] = useState("");
@@ -37,8 +38,12 @@ export default function RegisterForm() {
 
       setMessage(`User created successfully`);
       router.push('/login')
-    } catch (error: any) {
-      setMessage(`Error: ${error.message}`);
+    } catch (error) {
+      if (error instanceof Error) {
+        setMessage(`Error: ${error.message}`);
+    } else {
+        setMessage("An unknown error occurred.");
+    }
     }
   };
 
@@ -56,7 +61,7 @@ export default function RegisterForm() {
         className="bg-white p-6 rounded shadow-md w-full max-w-md"
       >
         <label className="block mb-4 text-black">
-          Nombre:
+          Name:
           <input
             type="text"
             className="mt-1 p-2 w-full border rounded"
@@ -76,7 +81,7 @@ export default function RegisterForm() {
           />
         </label>
         <label className="block mb-4 text-black">
-          Contraseña:
+          Password:
           <input
             type="password"
             className="mt-1 p-2 w-full border rounded"
@@ -90,7 +95,7 @@ export default function RegisterForm() {
           type="submit"
           className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
         >
-          Crear Usuario
+          Register
         </button>
         {message && (
           <p className={`mt-4 ${message.startsWith("Error") ? "text-red-500" : "text-green-500"}`}>
@@ -99,10 +104,10 @@ export default function RegisterForm() {
         )}
         <div className="mt-4 text-center">
           <p className="text-black">
-            ¿Ya tienes una cuenta?{" "}
-            <a href="/login" className="text-blue-500 hover:underline">
-              Iniciar sesión
-            </a>
+            Do you already have an account? {" "}
+            <Link href="/login" className="text-blue-500 hover:underline">
+              Log In
+            </Link>
           </p>
         </div>
       </form>
