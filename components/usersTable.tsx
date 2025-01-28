@@ -63,7 +63,7 @@ export default function UsersTable() {
                     </tr>
                 </thead>
                 <tbody>
-                    {users.map((user) => (
+                    {users && users.map((user) => (
                         <tr key={user.email}>
                             <td className="border p-2">
                                 <input
