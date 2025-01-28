@@ -36,8 +36,8 @@ export async function POST(request: Request) {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const query = `
-      INSERT INTO users (first_name, email, password, last_login) 
-      VALUES (?, ?, ?, NOW())
+      INSERT INTO users (id,first_name, email, password, last_login) 
+      VALUES (UUID(),?, ?, ?, NOW())
     `;
     const [result] : [OkPacket, FieldPacket[]] = await db!.query(query, [first_name, email, hashedPassword]);
 
