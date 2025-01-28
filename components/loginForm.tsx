@@ -7,7 +7,9 @@ import { useRouter } from "next/navigation";
 export default function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  
   const [message, setMessage] = useState("");
+
 
   const router = useRouter()
   
@@ -19,6 +21,8 @@ export default function LoginForm() {
 
     try {
     
+      
+
       const response = await fetch("/api/users/login", {
         method: "POST",
         headers: {
@@ -26,7 +30,7 @@ export default function LoginForm() {
         },
         body: JSON.stringify({
           email,
-          password, 
+          password,
         }),
       });
 
@@ -88,6 +92,14 @@ export default function LoginForm() {
             {message}
           </p>
         )}
+        <div className="mt-4 text-center">
+          <p className="text-black">
+            Don't you have an account?{" "}
+            <a href="/" className="text-blue-500 hover:underline">
+              Register Now
+            </a>
+          </p>
+        </div>
       </form>
     
     </div>

@@ -75,7 +75,28 @@ export default function UsersTable() {
                             <td className="border p-2">{user.blocked && user.blocked ? (<Lock size={20}/>) : (<Unlock size={20}/>)}</td>
                             <td className="border p-2">{user.first_name}</td>
                             <td className="border p-2">{user.email}</td>
-                            <td className="border p-2">{new Date(user.last_login).toLocaleString()}</td>
+                            <td className="border p-2">
+                                {new Date(user.last_login).toLocaleString('en-GB', {
+                                    day: 'numeric',
+                                    month: 'long',
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                })}
+                                <br />
+                                <span className="text-gray-500 text-sm">
+                                    {(() => {
+                                        const diff = Date.now() - new Date(user.last_login).getTime();
+                                        const minutes = Math.floor(diff / 60000);
+                                        const hours = Math.floor(minutes / 60);
+                                        const days = Math.floor(hours / 24);
+
+                                        if (minutes < 1) return 'just now';
+                                        if (minutes < 60) return `${minutes} minutes ago`;
+                                        if (hours < 24) return `${hours} hours ago`;
+                                        return `${days} days ago`;
+                                    })()}
+                                </span>
+                            </td>
                         </tr>
                     ))}
                 </tbody>

@@ -2,12 +2,15 @@
 
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import { useRouter } from "next/navigation";
 
 export default function RegisterForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [firstName, setFirstName] = useState("");
   const [message, setMessage] = useState("");
+
+  const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,6 +36,7 @@ export default function RegisterForm() {
 
 
       setMessage(`User created successfully`);
+      router.push('/login')
     } catch (error: any) {
       setMessage(`Error: ${error.message}`);
     }
@@ -93,8 +97,17 @@ export default function RegisterForm() {
             {message}
           </p>
         )}
+        <div className="mt-4 text-center">
+          <p className="text-black">
+            ¿Ya tienes una cuenta?{" "}
+            <a href="/login" className="text-blue-500 hover:underline">
+              Iniciar sesión
+            </a>
+          </p>
+        </div>
       </form>
-      
+
+
     </div>
   );
 }
