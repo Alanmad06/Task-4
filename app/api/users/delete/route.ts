@@ -1,7 +1,7 @@
-import { createConnection } from "@/lib/db";
+import { getConnection } from "@/auth";
 import { NextResponse } from "next/server";
 
-const db = await createConnection();
+const db = await getConnection();
 
 export async function POST(request: Request) {
   try {

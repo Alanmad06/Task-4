@@ -1,8 +1,9 @@
-import { createConnection } from '@/lib/db';
+
 import { NextResponse } from 'next/server';
 import bcrypt from "bcryptjs";
+import { getConnection } from '@/auth';
 
-const db = await createConnection();
+const db = await getConnection();
 
 export async function GET() {
   try {
