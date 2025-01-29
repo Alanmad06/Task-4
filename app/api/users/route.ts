@@ -8,7 +8,7 @@ let db : Connection | undefined;
 export async function GET() {
   try {
     db  = await getConnection()
-    const query = "SELECT * FROM users";
+    const query = "SELECT id,first_name,blocked,email,last_login FROM users";
     const [rows] :  [OkPacket, FieldPacket[]] = await db!.query(query);
     return NextResponse.json(rows);
   } catch (e) {

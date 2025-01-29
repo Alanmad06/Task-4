@@ -24,7 +24,7 @@ export default function UsersTable() {
         fetch('/api/users')
             .then((response) => response.json())
             .then((data) => {
-                console.log(data);
+                
                 setUsers(data);
             })
             .catch((error) => console.error('Error al obtener usuarios:', error));
