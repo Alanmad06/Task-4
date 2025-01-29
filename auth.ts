@@ -82,31 +82,31 @@ export const { auth, signIn, signOut } = NextAuth({
         const { email, password } = parsedCredentials.data;
 
         try {
-          // Obtener usuario
+          
           const user = await getUser(email);
           if (!user) {
             console.error("Usuario no encontrado.");
             return null;
           }
 
-          // Validar contraseña
+          
           const isPasswordValid = await bcrypt.compare(password, user.password!);
           if (!isPasswordValid) {
             console.error("Contraseña incorrecta.");
             return null;
           }
 
-          // Actualizar el último inicio de sesión
+      
           await updateLastLogin(email);
 
-          // Verificar si el usuario está bloqueado
+      
           const isBlocked = await getBlockedState(email);
           if (isBlocked) {
             console.error("Usuario bloqueado.");
             return null;
           }
 
-          return user;
+          return {id: user.id, email: user.email};
         } catch (error) {
           console.error("Error durante la autorización:", error);
           return null;
@@ -114,4 +114,19 @@ export const { auth, signIn, signOut } = NextAuth({
       },
     }),
   ],
+  callbacks :{
+     jwt({ token, user }) {
+      if (user) {
+        token.id = user.id; // Guarda el ID en el token de usuario
+      }
+      return token;
+    },
+     session({ session, token }) {
+      
+      session.user.id = token.id as string; // Asegura que el ID se pase a la sesión
+      
+      return session;
+    },
+   
+  }
 });

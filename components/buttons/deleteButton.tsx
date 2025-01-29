@@ -6,11 +6,17 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { User } from "@/lib/definitions";
 
+
+
+
+
 export default function DeleteButton({ selectedUsers, setUsers }: { selectedUsers: string[], setUsers: React.Dispatch<React.SetStateAction<User[]>> }) {
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState("");
-
+   
+    
     const handleDeleteUsers = async () => {
+       
         if (selectedUsers.length === 0) {
             setMessage("Please select at least one user to delete.");
             return;

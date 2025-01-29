@@ -5,10 +5,14 @@ import { Lock } from "lucide-react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { User } from "@/lib/definitions";
+import { handleBlockUser } from "@/lib/handleBlockUser";
+
 
 export default function BlockButton({ selectedUsers, setUsers }: { selectedUsers: string[], setUsers: React.Dispatch<React.SetStateAction<User[]>> }) {
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState("");
+
+    
 
     const handleBlockUsers = async () => {
         console.log(selectedUsers);
@@ -18,7 +22,7 @@ export default function BlockButton({ selectedUsers, setUsers }: { selectedUsers
         }
 
         setLoading(true);
-        setMessage("");  // Clear the message
+        setMessage("");  
 
         try {
             const response = await fetch("/api/users/block", {
@@ -35,7 +39,7 @@ export default function BlockButton({ selectedUsers, setUsers }: { selectedUsers
 
             const data = await response.json();
             setMessage(`Successfully blocked ${data.blockedCount} users.`);
-
+            await handleBlockUser(selectedUsers)
             setUsers((prevUsers) =>
                 prevUsers.map((user) =>
                     selectedUsers.includes(user.id) ? { ...user, blocked: true } : user
