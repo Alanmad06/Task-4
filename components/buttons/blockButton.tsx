@@ -2,23 +2,23 @@
 
 import { useState, useEffect } from "react";
 import { Lock } from "lucide-react";
-import {  toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { User } from "@/lib/definitions";
 
-export default function BlockButton({ selectedUsers,setUsers }: { selectedUsers: string[] ,setUsers: React.Dispatch<React.SetStateAction<User[]>>}) {
+export default function BlockButton({ selectedUsers, setUsers }: { selectedUsers: string[], setUsers: React.Dispatch<React.SetStateAction<User[]>> }) {
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState("");
 
     const handleBlockUsers = async () => {
         console.log(selectedUsers);
         if (selectedUsers.length === 0) {
-            setMessage("Selecciona al menos un usuario para bloquear.");
+            setMessage("Please select at least one user to block.");
             return;
         }
 
         setLoading(true);
-        setMessage("");  // Limpiar el mensaje
+        setMessage("");  // Clear the message
 
         try {
             const response = await fetch("/api/users/block", {
@@ -30,19 +30,18 @@ export default function BlockButton({ selectedUsers,setUsers }: { selectedUsers:
             });
 
             if (!response.ok) {
-                throw new Error("Error al bloquear los usuarios.");
+                throw new Error("Error blocking users.");
             }
 
             const data = await response.json();
-            setMessage(`Se bloquearon ${data.blockedCount} usuarios correctamente.`);
-              
+            setMessage(`Successfully blocked ${data.blockedCount} users.`);
+
             setUsers((prevUsers) =>
                 prevUsers.map((user) =>
                     selectedUsers.includes(user.id) ? { ...user, blocked: true } : user
                 )
             );
-            
-            
+
         } catch (error) {
             if (error instanceof Error) {
                 setMessage(`Error: ${error.message}`);
@@ -54,18 +53,17 @@ export default function BlockButton({ selectedUsers,setUsers }: { selectedUsers:
         }
     };
 
-    
     useEffect(() => {
         if (message) {
             if (message.startsWith("Error")) {
                 toast.error(message);
-            } else if (message.startsWith("Se bloquearon")) {
+            } else if (message.startsWith("Successfully blocked")) {
                 toast.success(message);
             } else {
                 toast.info(message);
             }
         }
-    }, [message]);  
+    }, [message]);
 
     return (
         <div className="mb-4 flex flex-col items-center">
@@ -74,7 +72,7 @@ export default function BlockButton({ selectedUsers,setUsers }: { selectedUsers:
                 disabled={loading}
                 className={`p-2 rounded-md ${loading ? "bg-blue-400 cursor-not-allowed" : "bg-blue-500 hover:bg-blue-600"
                     } text-white`}
-                title="Bloquear usuarios"
+                title="Block users"
             >
                 {loading ? (
                     <div className="animate-spin">
@@ -86,7 +84,6 @@ export default function BlockButton({ selectedUsers,setUsers }: { selectedUsers:
                     </div>
                 )}
             </button>
-           
         </div>
     );
 }

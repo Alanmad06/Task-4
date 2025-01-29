@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Trash } from "lucide-react";
-import {  toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { User } from "@/lib/definitions";
 
@@ -12,7 +12,7 @@ export default function DeleteButton({ selectedUsers, setUsers }: { selectedUser
 
     const handleDeleteUsers = async () => {
         if (selectedUsers.length === 0) {
-            setMessage("Selecciona al menos un usuario para eliminar.");
+            setMessage("Please select at least one user to delete.");
             return;
         }
 
@@ -29,13 +29,13 @@ export default function DeleteButton({ selectedUsers, setUsers }: { selectedUser
             });
 
             if (!response.ok) {
-                throw new Error("Error al eliminar los usuarios.");
+                throw new Error("Error deleting users.");
             }
 
             const data = await response.json();
-            setMessage(`Se eliminaron ${data.deletedCount} usuarios correctamente.`);
+            setMessage(`Successfully deleted ${data.deletedCount} users.`);
 
-            // Actualiza el estado de los usuarios eliminando los seleccionados
+            // Update the state by removing the selected users
             setUsers((prevUsers) => prevUsers.filter((user) => !selectedUsers.includes(user.id)));
 
         } catch (error) {
@@ -53,7 +53,7 @@ export default function DeleteButton({ selectedUsers, setUsers }: { selectedUser
         if (message) {
             if (message.startsWith("Error")) {
                 toast.error(message);
-            } else if (message.startsWith("Se eliminaron")) {
+            } else if (message.startsWith("Successfully deleted")) {
                 toast.success(message);
             } else {
                 toast.info(message);
@@ -68,7 +68,7 @@ export default function DeleteButton({ selectedUsers, setUsers }: { selectedUser
                 disabled={loading}
                 className={`p-2 rounded-md ${loading ? "bg-red-400 cursor-not-allowed" : "bg-red-500 hover:bg-red-600"
                     } text-white`}
-                title="Eliminar usuarios"
+                title="Delete users"
             >
                 {loading ? (
                     <div className="animate-spin">
