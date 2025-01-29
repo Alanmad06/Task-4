@@ -40,7 +40,7 @@ export default function UsersTable() {
     };
 
     return (
-        <div className="flex flex-col items-center m-10 justify-center min-h-screen bg-gray-100">
+        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
             <div className="flex gap-2 items-center justify-center">
                 <BlockButton selectedUsers={selectedUsers} setUsers={setUsers}/>
                 <UnblockButton selectedUsers={selectedUsers} setUsers={setUsers}/>
@@ -64,7 +64,7 @@ export default function UsersTable() {
                 </thead>
                 <tbody>
                     {users && users.map((user) => (
-                        <tr key={user.email}>
+                        <tr key={user.id}>
                             <td className="border p-2">
                                 <input
                                     type="checkbox"

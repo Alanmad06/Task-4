@@ -8,7 +8,7 @@ export default function Users() {
 
   
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+        <div className="flex flex-col p-5 items-center justify-center min-h-screen bg-gray-100">
             <h1 className="text-4xl text-black">Users</h1>
             <form className="absolute top-1 right-1"
           action={async () => {
