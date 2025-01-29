@@ -9,7 +9,7 @@ import { Connection } from "mysql2/promise";
 
 let db: Connection | undefined;
 
-// Reutilizar la conexión a la base de datos
+
 export async function getConnection(): Promise<Connection> {
   if (!db) {
     try {
@@ -22,7 +22,7 @@ export async function getConnection(): Promise<Connection> {
   return db;
 }
 
-// Obtener un usuario por correo
+
 async function getUser(email: string): Promise<User | undefined> {
   try {
     const db = await getConnection();
@@ -34,7 +34,6 @@ async function getUser(email: string): Promise<User | undefined> {
   }
 }
 
-// Actualizar el último inicio de sesión
 async function updateLastLogin(email: string): Promise<void> {
   try {
     const db = await getConnection();
@@ -46,7 +45,7 @@ async function updateLastLogin(email: string): Promise<void> {
   }
 }
 
-// Verificar si el usuario está bloqueado
+
 async function getBlockedState(email: string): Promise<boolean> {
   try {
     const db = await getConnection();
@@ -69,7 +68,7 @@ export const { auth, signIn, signOut } = NextAuth({
   providers: [
     CredentialsProvider({
       async authorize(credentials) {
-        // Validar credenciales con Zod
+        
         const parsedCredentials = z
           .object({ email: z.string().email(), password: z.string().min(1) })
           .safeParse(credentials);
@@ -117,13 +116,13 @@ export const { auth, signIn, signOut } = NextAuth({
   callbacks :{
      jwt({ token, user }) {
       if (user) {
-        token.id = user.id; // Guarda el ID en el token de usuario
+        token.id = user.id; 
       }
       return token;
     },
      session({ session, token }) {
       
-      session.user.id = token.id as string; // Asegura que el ID se pase a la sesión
+      session.user.id = token.id as string;
       
       return session;
     },
