@@ -1,26 +1,30 @@
 import { getConnection } from "@/auth";
-import {Connection , OkPacket, FieldPacket } from "mysql2/promise";
-import { } from "mysql2/promise";
+import { Connection, OkPacket, FieldPacket } from "mysql2/promise";
 import { NextResponse } from "next/server";
 
-let db : Connection | undefined;
+let db: Connection | undefined;
 
 export async function POST(request: Request) {
   try {
-    db = await getConnection()
+    db = await getConnection();
     const { userIds } = await request.json();
 
+    
     if (!userIds || !Array.isArray(userIds) || userIds.length === 0) {
-      return NextResponse.json({ error: "No se proporcionaron IDs de usuarios." }, { status: 400 });
+      return NextResponse.json({ error: "Were not found any ID" }, { status: 400 });
     }
+
+    const placeholders = userIds.map(() => "?").join(", ");
 
     const query = `
       DELETE FROM users
-      WHERE id = (?)
+      WHERE id IN (${placeholders})
     `;
-    const [result]: [OkPacket, FieldPacket[]] = await db!.query(query, [userIds]);
 
-    return NextResponse.json({ blockedCount: result.affectedRows });
+    
+    const [result]: [OkPacket, FieldPacket[]] = await db!.query(query, userIds);
+
+    return NextResponse.json({ deletedCount: result.affectedRows });
   } catch (e) {
     console.error(e);
     if (e instanceof Error) {
