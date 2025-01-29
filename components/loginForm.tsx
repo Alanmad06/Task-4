@@ -30,7 +30,13 @@ export default function LoginForm() {
       });
 
       if (!response.ok) {
-        setMessage("Error: Something happend trying to Login ");
+        const res =  await response.json()
+        console.log(res)
+        if(res.error){
+          setMessage('Error: Invalid credentials');
+        }else{
+        setMessage(`Error: Something happend trying to Login ${res.error} `);
+        }
       }
 
       router.push("/users")
@@ -88,7 +94,7 @@ export default function LoginForm() {
         </button>
         {message && (
           <p className={`mt-4 ${message.startsWith("Error") ? "text-red-500" : "text-green-500"}`}>
-            {message}
+            {message.slice(6)}
           </p>
         )}
         <div className="mt-4 text-center">
