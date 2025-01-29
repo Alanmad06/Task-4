@@ -40,7 +40,7 @@ export default function UsersTable() {
     };
 
     return (
-        <div className="flex flex-col items-center m-10 justify-center max-h-screen bg-gray-100">
+        <div className="flex flex-col items-center m-10 justify-center min-h-screen bg-gray-100">
             <div className="flex gap-2 items-center justify-center">
                 <BlockButton selectedUsers={selectedUsers} setUsers={setUsers}/>
                 <UnblockButton selectedUsers={selectedUsers} setUsers={setUsers}/>
