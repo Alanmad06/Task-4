@@ -99,7 +99,7 @@ export default function RegisterForm() {
         </button>
         {message && (
           <p className={`mt-4 ${message.startsWith("Error") ? "text-red-500" : "text-green-500"}`}>
-            {message}
+            {message.slice(6)}
           </p>
         )}
         <div className="mt-4 text-center">
