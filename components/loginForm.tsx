@@ -94,7 +94,7 @@ export default function LoginForm() {
         </button>
         {message && (
           <p className={`mt-4 ${message.startsWith("Error") ? "text-red-500" : "text-green-500"}`}>
-            {message.slice(6)}
+            {message.startsWith("Error") ? message.slice(6) : message}
           </p>
         )}
         <div className="mt-4 text-center">

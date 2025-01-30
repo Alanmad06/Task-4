@@ -23,7 +23,7 @@ export async function getConnection(): Promise<Connection> {
 }
 
 
-async function getUser(email: string): Promise<User | undefined> {
+export async function getUser(email: string): Promise<User | undefined> {
   try {
     const db = await getConnection();
     const [results]: any = await db.query("SELECT * FROM users WHERE email = ?", [email]);

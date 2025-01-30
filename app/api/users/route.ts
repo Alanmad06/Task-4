@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
-import { getConnection } from "@/auth";
+import { getConnection, getUser } from "@/auth";
 import { OkPacket, FieldPacket, Connection } from "mysql2/promise";
 
 let db : Connection | undefined;
@@ -28,12 +28,21 @@ export async function POST(request: Request) {
 
     if (!first_name || !email || !password) {
       return NextResponse.json(
-        { error: "Faltan campos requeridos" },
+        { error: "Required fields are missing" },
         { status: 400 }
       );
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
+    const user = !!await getUser(email);
+    console.log('USER:',user)
+    
+    if(user){
+      return NextResponse.json(
+        { error: "Email already in use" },
+        { status: 400 }
+      );
+    }
 
     const query = `
       INSERT INTO users (id,first_name, email, password, last_login) 

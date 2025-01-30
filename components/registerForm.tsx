@@ -32,8 +32,11 @@ export default function RegisterForm() {
       });
 
       if (!response.ok) {
-        setMessage("Error: something happend while Register");
+        const errorData = await response.json();
+        setMessage(`Error: ${errorData.error || "something happened while Register"}`);
+        return;
       }
+      
 
 
       setMessage(`User created successfully`);
@@ -99,7 +102,7 @@ export default function RegisterForm() {
         </button>
         {message && (
           <p className={`mt-4 ${message.startsWith("Error") ? "text-red-500" : "text-green-500"}`}>
-            {message.slice(6)}
+            {message.startsWith("Error") ? message.slice(6) : message}
           </p>
         )}
         <div className="mt-4 text-center">
