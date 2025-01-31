@@ -30,7 +30,8 @@ export async function getUser(email: string): Promise<User | undefined> {
     return results[0];
   } catch (error) {
     console.error("Error al obtener el usuario:", error);
-    throw new Error("Error al obtener el usuario.");
+    return undefined
+    
   }
 }
 
